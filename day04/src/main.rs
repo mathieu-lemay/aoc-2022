@@ -43,9 +43,7 @@ impl Pair {
     }
 
     fn overlaps(&self, other: &Pair) -> bool {
-        self.contains(other)
-            || (self.x >= other.x && self.x <= other.y)
-            || (self.y >= other.x && self.y <= other.y)
+        self.x <= other.y && self.y >= other.x
     }
 }
 
