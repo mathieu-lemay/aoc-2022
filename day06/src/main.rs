@@ -1,15 +1,12 @@
-use itertools::Itertools;
-use std::collections::VecDeque;
+use std::collections::HashSet;
 use std::fmt::Display;
 use std::time::Instant;
 
 use aoc_common::get_input_as_string;
 
 fn solve(input: &str) -> (impl Display, impl Display) {
-    let (mut towers, moves) = parse_input(&input.iter().map(|s| s.as_str()).collect_vec());
-
-    let p1 = process_moves(&mut towers.clone(), &moves);
-    let p2 = process_moves_9001(&mut towers, &moves);
+    let p1 = get_first_marker(input, 4);
+    let p2 = get_first_marker(input, 14);
 
     (p1, p2)
 }
@@ -28,7 +25,19 @@ fn main() {
     println!("Duration: {:.3}μs", t);
 }
 
-fn get_first_marker(input: &str) -> u32 {
+fn get_first_marker(input: &str, window_size: usize) -> usize {
+    for i in 0..input.len() - window_size {
+        let window = input
+            .chars()
+            .skip(i)
+            .take(window_size)
+            .collect::<HashSet<char>>();
+
+        if window.len() == window_size {
+            return i + window_size;
+        }
+    }
+
     0
 }
 
@@ -38,31 +47,22 @@ mod tests {
 
     #[test]
     fn test_p1() {
-        assert_eq!(get_first_marker("mjqjpqmgbljsphdztnvjfqwrcgsmlb"), 7);
-        assert_eq!(get_first_marker("bvwbjplbgvbhsrlpgdmjqwftvncz"), 5);
-        assert_eq!(get_first_marker("nppdvjthqldpwncqszvftbrmjlhg"), 6);
-        assert_eq!(get_first_marker("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"), 10);
-        assert_eq!(get_first_marker("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"), 11);
+        assert_eq!(get_first_marker("mjqjpqmgbljsphdztnvjfqwrcgsmlb", 4), 7);
+        assert_eq!(get_first_marker("bvwbjplbgvbhsrlpgdmjqwftvncz", 4), 5);
+        assert_eq!(get_first_marker("nppdvjthqldpwncqszvftbrmjlhg", 4), 6);
+        assert_eq!(get_first_marker("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", 4), 10);
+        assert_eq!(get_first_marker("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", 4), 11);
     }
 
     #[test]
     fn test_p2() {
-        let input = vec![
-            "    [D]    ",
-            "[N] [C]    ",
-            "[Z] [M] [P]",
-            " 1   2   3 ",
-            "",
-            "move 1 from 2 to 1",
-            "move 3 from 1 to 3",
-            "move 2 from 2 to 1",
-            "move 1 from 1 to 2",
-        ];
-
-        let (mut towers, moves) = parse_input(&input);
-
-        let res = process_moves_9001(&mut towers, &moves);
-
-        assert_eq!(res, "MCD");
+        assert_eq!(get_first_marker("mjqjpqmgbljsphdztnvjfqwrcgsmlb", 14), 19);
+        assert_eq!(get_first_marker("bvwbjplbgvbhsrlpgdmjqwftvncz", 14), 23);
+        assert_eq!(get_first_marker("nppdvjthqldpwncqszvftbrmjlhg", 14), 23);
+        assert_eq!(
+            get_first_marker("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", 14),
+            29
+        );
+        assert_eq!(get_first_marker("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", 14), 26);
     }
 }
