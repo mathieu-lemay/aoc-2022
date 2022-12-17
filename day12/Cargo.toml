@@ -7,3 +7,4 @@ edition = "2021"
 [dependencies]
 aoc-common = { path = "../aoc-common" }
 itertools = "0.10.1"
+pathfinding = "4.1.1"
