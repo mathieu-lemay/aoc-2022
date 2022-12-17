@@ -3,7 +3,7 @@ use std::hash::Hash;
 use std::time::Instant;
 
 use itertools::Itertools;
-use pathfinding::prelude::dijkstra;
+use pathfinding::prelude::{dijkstra, dijkstra_all};
 
 use aoc_common::get_input;
 
@@ -145,14 +145,14 @@ impl Grid {
 
 #[inline]
 fn is_walkable(current: u8, target: u8) -> bool {
-    current >= target || current == target - 1
+    current <= target || current == target + 1
 }
 
 fn get_cheapest_path(grid: &Grid) -> Option<usize> {
     let start = grid.get_start();
     let goal = grid.get_goal();
 
-    let result = dijkstra(&start, |p| grid.get_successors(p), |p| *p == goal);
+    let result = dijkstra(&goal, |p| grid.get_successors(p), |p| *p == start);
 
     result.map(|r| r.1)
 }
@@ -161,16 +161,12 @@ fn get_cheapest_path_from_any_start(grid: &Grid) -> Option<usize> {
     let starts = grid.get_alternate_starts();
     let goal = grid.get_goal();
 
-    let result = starts
-        .iter()
-        .map(|s| {
-            dijkstra(s, |p| grid.get_successors(p), |p| *p == goal)
-                .map(|r| r.1)
-                .unwrap_or(usize::MAX)
-        })
-        .min();
+    let results = dijkstra_all(&goal, |p| grid.get_successors(p));
 
-    result
+    starts
+        .iter()
+        .map(|s| results.get(s).map(|r| r.1).unwrap_or(usize::MAX))
+        .min()
 }
 
 #[cfg(test)]
