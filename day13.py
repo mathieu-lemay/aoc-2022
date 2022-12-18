@@ -1,3 +1,4 @@
+import json
 import time
 from typing import Optional
 
@@ -9,7 +10,7 @@ def debug_print(*args, **kwargs):
 
 def parse_input(input_: str) -> list[tuple[list, list]]:
     values = list(
-        map(lambda s: eval(s), filter(lambda s: s.strip() != "", input_.split("\n")))
+        map(json.loads, filter(lambda s: s.strip() != "", input_.split("\n")))
     )
 
     return [(values[i], values[i + 1]) for i in range(0, len(values), 2)]
@@ -72,24 +73,23 @@ def part_1(values: list[tuple[list, list]]) -> int:
 
 
 def part_2(values: list[tuple[list, list]]) -> int:
-    div1 = [[2]]
-    div2 = [[6]]
-    packets = [div1, div2]
+    div2 = [[2]]
+    div6 = [[6]]
+    count2 = 0
+    count6 = 0
 
     for v in values:
-        packets.extend(v)
+        for w in v:
+            if is_ordered(w, div2):
+                count2 += 1
+                count6 += 1
+            elif is_ordered(w, div6):
+                count6 += 1
 
-    for i in range(len(packets) - 1):
-        for j in range(i + 1, len(packets)):
-            a = packets[i]
-            b = packets[j]
-            if not is_ordered(a, b):
-                packets[i], packets[j] = packets[j], packets[i]
+    x = count2 + 1
+    y = count6 + 2
 
-    for p in packets:
-        debug_print(p)
-
-    return (packets.index(div1) + 1) * (packets.index(div2) + 1)
+    return x * y
 
 
 def main():
