@@ -1,11 +1,10 @@
 use std::fmt::Display;
-use std::hash::Hash;
 use std::time::Instant;
 
 use itertools::Itertools;
 use pathfinding::prelude::{dijkstra, dijkstra_all};
 
-use aoc_common::get_input;
+use aoc_common::{get_input, Point};
 
 fn main() {
     let input = get_input("day12.txt");
@@ -56,12 +55,6 @@ fn parse_grid(input: &[String]) -> Grid {
         width,
         points,
     }
-}
-
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
-struct Point {
-    x: usize,
-    y: usize,
 }
 
 struct Grid {
